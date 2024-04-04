@@ -1,3 +1,13 @@
+import json
+import os
+
+# Define the JSON file path
+sourceJsonPath = r"path\test_all_data.json"
+
+# Read data from the provided JSON file
+with open(sourceJsonPath, 'r') as file:
+    data = json.load(file)
+
 # Given setup_data_list_off
 setup_data_list_off = [
     {
@@ -83,19 +93,21 @@ extracted_data = []
 
 # Flag to indicate whether to start/stop extraction
 start_extraction = False
-for data_dict in setup_data_list_off:
-    data = data_dict['data']
+for packet in data:
+
+    data_fragment = packet['_source']['layers']['Setup Data']['usb.data_fragment']
+    formatted_data = data_fragment.replace(':', '')
     
     # Start extraction when specific data is encountered
-    if data == init_comm:
+    if formatted_data == init_comm:
         start_extraction = True
     
     # Append data to the list if extraction flag is True
     if start_extraction:
-        extracted_data.append(data)
+        extracted_data.append(formatted_data)
 
     # Stop extraction when specific data is encountered
-    if data == end_comm:
+    if formatted_data == end_comm:
         start_extraction = False
 
 count = len(extracted_data)
@@ -103,6 +115,17 @@ if(count == 24):
     print('Extraction successful')
     print("Count of items in the list:", count)
     print(extracted_data)
+
+    # Save extracted data as a JSON file
+    output_folder = 'hex'
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
+    output_file = os.path.join(output_folder, os.path.basename(sourceJsonPath) + '.json')
+    with open(output_file, 'w') as file:
+        json.dump(extracted_data, file)
+
+    print("Data extracted and saved successfully to:", output_file)
 else:
     print('ERROR: Extraction failed!')
     preCount = len(setup_data_list_off)
