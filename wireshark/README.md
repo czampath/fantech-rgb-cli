@@ -1,5 +1,7 @@
 ## Wireshark USB Traffic Capture Guide
 
+**Note:** This guide is specifically tailored for FANTECH RGB devices that are non-AuraSync-compatible.
+
 1. **Install Wireshark with USBPcap:**
    Ensure you have Wireshark installed with USBPcap support. USBPcap enables Wireshark to capture USB traffic on Windows.
 
