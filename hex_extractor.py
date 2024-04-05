@@ -7,11 +7,10 @@ from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
 raw_data_file_path = r"hex\raw-data\default.json"
-isStaticEffect = False
-frameThreashold = 24
+frame_threashold = 24
 
 def extract_data_from_packets(packets):
-    global frameThreashold
+    global frame_threashold
     # Extracting 'data_fragment' from each dictionary and creating a list
     extracted_data = []
 
@@ -35,7 +34,7 @@ def extract_data_from_packets(packets):
             found = any(formatted_data == getattr(SpecialDataPoint, attr) for attr in dir(SpecialDataPoint) if not attr.startswith('__'))
             if found:
                 logging.info("Special data Point detected")
-                frameThreashold += 1
+                frame_threashold += 1
 
         # Stop extraction when specific data is encountered
         if formatted_data == ControlDataPoint.END_COMM:
@@ -102,45 +101,25 @@ def remove_node_from_json(input_json_file_path):
     else:
         logging.error("Output JSON file not found.")
 
-# with open(raw_data_file_path, 'r') as file:
-#     packets = json.load(file)
-
-# extracted_data = extract_data_from_packets(packets)
-
-# preCount = len(packets)
-# postCount = len(extracted_data)
-
-# if(postCount == frameThreashold):
-#     print('Extraction successful')
-#     print("pre-extractions frame count: ", preCount)
-#     print("post-extractions frame count: ", postCount)
-#     update_or_create_output_json(raw_data_file_path, extracted_data)
-# else:
-#     print('ERROR: Extraction failed!')
-#     print("pre-extractions frame count: ", preCount)
-#     print("post-extractions frame count: ", postCount)
-#     print("first byte = ",extracted_data[0])
-#     print("last byte = ",extracted_data[-1])
-
-def extract(input_file_path):
-    global frameThreashold
+def do_extract(input_file_path):
+    global frame_threashold
 
     with open(input_file_path, 'r') as file:
-        pData = json.load(file)
+        extracted_data = json.load(file)
 
-    extracted_data = extract_data_from_packets(pData)
+    extracted_data = extract_data_from_packets(extracted_data)
 
-    preCount = len(pData)
-    postCount = len(extracted_data)
+    pre_count = len(extracted_data)
+    post_count = len(extracted_data)
 
-    if(postCount == frameThreashold):
+    if(post_count == frame_threashold):
         logging.info('Extraction successful')
-        logging.debug("pre-extractions frame count: %d", preCount)
-        logging.debug("post-extractions frame count: %d", postCount)
+        logging.debug("pre-extractions frame count: %d", pre_count)
+        logging.debug("post-extractions frame count: %d", post_count)
         update_or_create_output_json(input_file_path, extracted_data)
     else:
         logging.error('Extraction failed!')
-        logging.debug("pre-extractions frame count: %d", preCount)
-        logging.debug("post-extractions frame count: %d", postCount)
+        logging.debug("pre-extractions frame count: %d", pre_count)
+        logging.debug("post-extractions frame count: %d", post_count)
         logging.debug("first byte = %s",extracted_data[0])
         logging.debug("last byte = %s",extracted_data[-1])
