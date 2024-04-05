@@ -1,6 +1,10 @@
 import os
 import json
+import logging
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
+
+# Configure logging to write messages at the INFO level or higher to both the console and a file
+logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
 raw_data_file_path = r"hex\raw-data\default.json"
 isStaticEffect = False
@@ -18,6 +22,8 @@ def extract_data_from_packets(packets):
         data_fragment = packet['_source']['layers']['Setup Data']['usb.data_fragment']
         formatted_data = data_fragment.replace(':', '')
 
+        logging.debug(formatted_data)
+
         # Start extraction when specific data is encountered
         if formatted_data == ControlDataPoint.INIT_COMM:
             start_extraction = True
@@ -28,7 +34,7 @@ def extract_data_from_packets(packets):
             
             found = any(formatted_data == getattr(SpecialDataPoint, attr) for attr in dir(SpecialDataPoint) if not attr.startswith('__'))
             if found:
-                print("Special data Point detected")
+                logging.info("Special data Point detected")
                 frameThreashold += 1
 
         # Stop extraction when specific data is encountered
@@ -40,7 +46,7 @@ def extract_data_from_packets(packets):
 def update_or_create_output_json(input_json_file_path, extracted_data):
     # Extract the filename from the provided input file path
     filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
-    print("Extracting ",filename)
+    logging.info("Extracting %s",filename)
     # Define the output JSON file path
     output_json_file_path = "data.json"
 
@@ -67,12 +73,12 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
     with open(output_json_file_path, 'w') as file:
         json.dump(data, file)
 
-    print("Data extracted and saved successfully")
+    logging.info("Data extracted and saved successfully")
 
 def remove_node_from_json(input_json_file_path):
     # Extract the filename from the provided input file path
     filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
-    print("Removing node for", filename)
+    logging.info("Removing node for %s", filename)
     
     # Define the output JSON file path
     output_json_file_path = "data.json"
@@ -86,15 +92,15 @@ def remove_node_from_json(input_json_file_path):
         # Remove the node corresponding to the filename
         if "OPTILUXS_MK884" in data and "hex" in data["OPTILUXS_MK884"] and "rgb" in data["OPTILUXS_MK884"]["hex"] and "fx" in data["OPTILUXS_MK884"]["hex"]["rgb"] and filename in data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"]:
             del data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][filename]
-            print(f"Node for '{filename}' removed successfully.")
+            logging.info(f"Node for '{filename}' removed successfully.")
 
             # Save the updated data to the output JSON file
             with open(output_json_file_path, 'w') as file:
                 json.dump(data, file)
         else:
-            print(f"Node for '{filename}' not found.")
+            logging.error(f"Node for '{filename}' not found.")
     else:
-        print("Output JSON file not found.")
+        logging.error("Output JSON file not found.")
 
 # with open(raw_data_file_path, 'r') as file:
 #     packets = json.load(file)
@@ -128,13 +134,13 @@ def extract(input_file_path):
     postCount = len(extracted_data)
 
     if(postCount == frameThreashold):
-        print('Extraction successful')
-        print("pre-extractions frame count: ", preCount)
-        print("post-extractions frame count: ", postCount)
+        logging.info('Extraction successful')
+        logging.debug("pre-extractions frame count: %d", preCount)
+        logging.debug("post-extractions frame count: %d", postCount)
         update_or_create_output_json(input_file_path, extracted_data)
     else:
-        print('ERROR: Extraction failed!')
-        print("pre-extractions frame count: ", preCount)
-        print("post-extractions frame count: ", postCount)
-        print("first byte = ",extracted_data[0])
-        print("last byte = ",extracted_data[-1])
+        logging.error('Extraction failed!')
+        logging.debug("pre-extractions frame count: %d", preCount)
+        logging.debug("post-extractions frame count: %d", postCount)
+        logging.debug("first byte = %s",extracted_data[0])
+        logging.debug("last byte = %s",extracted_data[-1])

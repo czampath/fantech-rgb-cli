@@ -1,5 +1,10 @@
 import os
 import json
+import logging
+
+# Configure logging to write messages at the INFO level or higher to both the console and a file
+logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
+
 
 def update_vendor_product_ids(vendor_id, product_id):
 
@@ -33,26 +38,26 @@ def update_vendor_product_ids(vendor_id, product_id):
     with open(output_json_file_path, 'w') as file:
         json.dump(data, file)
 
-    print("Device info saved successfully")
+    logging.info("Device info saved successfully")
 
 def get_vendor_product_ids():
     config_file_path = "data.json"
     if not os.path.exists(config_file_path):
-        print("Config file does not exist. Please update the vendor and product IDs if auto-configuration fails")
+        logging.error("Config file does not exist. Please update the vendor and product IDs if auto-configuration fails")
         return None
     
     with open(config_file_path, 'r') as file:
         data = json.load(file)
     
     if "OPTILUXS_MK884" not in data:
-        print("Vendor and Product IDs not found in the config file.")
+        logging.error("Vendor and Product IDs not found in the config file.")
         return None
     
     vendor_id = data["OPTILUXS_MK884"].get("VENDOR_ID")
     product_id = data["OPTILUXS_MK884"].get("PRODUCT_ID")
     
     if vendor_id is None or product_id is None:
-        print("Vendor or Product ID is missing in the config file.")
+        logging.error("Vendor or Product ID is missing in the config file.")
         return None
     
     return vendor_id, product_id
