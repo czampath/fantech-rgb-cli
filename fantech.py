@@ -6,10 +6,13 @@ from constants.hid_constants import HID_Data
 from config import get_vendor_product_ids, update_vendor_product_ids
 from hex_extractor import extract
 
-# Vendor and Product IDs of your Fantech RGB gaming keyboard
-
-isDeviceInfoFound = False
+# auto-config flags
+isDeviceInfoFound = False 
+configAttemptLimit = 2
+configAttempts = 0
 device = None
+
+# desired RGB effect
 effectName = "default"
 
 # config the device
@@ -23,6 +26,10 @@ while(not isDeviceInfoFound):
         device = usb.core.find(idVendor=vendor_id, idProduct=product_id)
         isDeviceInfoFound = True
     else:
+        configAttempts += 1
+        if configAttempts >= configAttemptLimit:
+            print("FATAL: Maximun auto-configuration attempts reached")
+            exit()
         print("WARNING: Applying auto-configs for OPTILUXS_MK884")
         update_vendor_product_ids('0x0C45','0x8006')
 
