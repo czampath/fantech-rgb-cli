@@ -71,6 +71,33 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
 
     print("Data extracted and saved successfully to:", output_json_file_path)
 
+def remove_node_from_json(input_json_file_path):
+    # Extract the filename from the provided input file path
+    filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
+    print("Removing node for", filename)
+    
+    # Define the output JSON file path
+    output_json_file_path = "data.json"
+
+    # Check if the output JSON file exists
+    if os.path.exists(output_json_file_path):
+        # Load existing data from the output JSON file
+        with open(output_json_file_path, 'r') as file:
+            data = json.load(file)
+
+        # Remove the node corresponding to the filename
+        if "OPTILUXS_MK884" in data and "hex" in data["OPTILUXS_MK884"] and "rgb" in data["OPTILUXS_MK884"]["hex"] and "fx" in data["OPTILUXS_MK884"]["hex"]["rgb"] and filename in data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"]:
+            del data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][filename]
+            print(f"Node for '{filename}' removed successfully.")
+
+            # Save the updated data to the output JSON file
+            with open(output_json_file_path, 'w') as file:
+                json.dump(data, file)
+        else:
+            print(f"Node for '{filename}' not found.")
+    else:
+        print("Output JSON file not found.")
+
 with open(input_json_file_path, 'r') as file:
     packets = json.load(file)
 
