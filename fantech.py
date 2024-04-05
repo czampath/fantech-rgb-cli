@@ -19,6 +19,25 @@ if device is None:
 # Set configuration
 device.set_configuration()
 
+def list_effects_from_json():
+    json_file_path = "data.json"
+    try:
+        # Load data from the JSON file
+        with open(json_file_path, 'r') as file:
+            data = json.load(file)
+        
+        # Extract filenames from the JSON data
+        effects = data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"].keys()
+        
+        # Print the list of filenames
+        print("Available FX:")
+        for effect in effects:
+            print(effect)
+        
+        return effects
+
+    except FileNotFoundError:
+        print("Error: JSON file not found at the specified path.")
 
 def get_value_from_json(filename):
     # Define the output JSON file path
@@ -39,6 +58,10 @@ def get_value_from_json(filename):
     else:
         print("ERROR: FX not recognized")
         return None
+
+
+# list available FX
+# list_filenames_from_json()
 
 # Draw FX directly form the data.json
 filename = "sample" # Name of the effect to activate
