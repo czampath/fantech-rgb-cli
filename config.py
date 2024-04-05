@@ -38,7 +38,7 @@ def update_vendor_product_ids(vendor_id, product_id):
 def get_vendor_product_ids():
     config_file_path = "data.json"
     if not os.path.exists(config_file_path):
-        print("Config file does not exist. Please update the vendor and product IDs first.")
+        print("Config file does not exist. Please update the vendor and product IDs if auto-configuration fails")
         return None
     
     with open(config_file_path, 'r') as file:

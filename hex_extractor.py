@@ -2,7 +2,7 @@ import os
 import json
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 
-input_json_file_path = r"hex\raw-data\sample.json"
+raw_data_file_path = r"hex\raw-data\default.json"
 isStaticEffect = False
 frameThreashold = 24
 
@@ -17,8 +17,6 @@ def extract_data_from_packets(packets):
 
         data_fragment = packet['_source']['layers']['Setup Data']['usb.data_fragment']
         formatted_data = data_fragment.replace(':', '')
-
-        print(formatted_data)
 
         # Start extraction when specific data is encountered
         if formatted_data == ControlDataPoint.INIT_COMM:
@@ -69,7 +67,7 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
     with open(output_json_file_path, 'w') as file:
         json.dump(data, file)
 
-    print("Data extracted and saved successfully to:", output_json_file_path)
+    print("Data extracted and saved successfully")
 
 def remove_node_from_json(input_json_file_path):
     # Extract the filename from the provided input file path
@@ -98,22 +96,45 @@ def remove_node_from_json(input_json_file_path):
     else:
         print("Output JSON file not found.")
 
-with open(input_json_file_path, 'r') as file:
-    packets = json.load(file)
+# with open(raw_data_file_path, 'r') as file:
+#     packets = json.load(file)
 
-extracted_data = extract_data_from_packets(packets)
+# extracted_data = extract_data_from_packets(packets)
 
-preCount = len(packets)
-postCount = len(extracted_data)
+# preCount = len(packets)
+# postCount = len(extracted_data)
 
-if(postCount == frameThreashold):
-    print('Extraction successful')
-    print("pre-extractions frame count: ", preCount)
-    print("post-extractions frame count: ", postCount)
-    update_or_create_output_json(input_json_file_path, extracted_data)
-else:
-    print('ERROR: Extraction failed!')
-    print("pre-extractions frame count: ", preCount)
-    print("post-extractions frame count: ", postCount)
-    print("first byte = ",extracted_data[0])
-    print("last byte = ",extracted_data[-1])
+# if(postCount == frameThreashold):
+#     print('Extraction successful')
+#     print("pre-extractions frame count: ", preCount)
+#     print("post-extractions frame count: ", postCount)
+#     update_or_create_output_json(raw_data_file_path, extracted_data)
+# else:
+#     print('ERROR: Extraction failed!')
+#     print("pre-extractions frame count: ", preCount)
+#     print("post-extractions frame count: ", postCount)
+#     print("first byte = ",extracted_data[0])
+#     print("last byte = ",extracted_data[-1])
+
+def extract(input_file_path):
+    global frameThreashold
+
+    with open(input_file_path, 'r') as file:
+        pData = json.load(file)
+
+    extracted_data = extract_data_from_packets(pData)
+
+    preCount = len(pData)
+    postCount = len(extracted_data)
+
+    if(postCount == frameThreashold):
+        print('Extraction successful')
+        print("pre-extractions frame count: ", preCount)
+        print("post-extractions frame count: ", postCount)
+        update_or_create_output_json(input_file_path, extracted_data)
+    else:
+        print('ERROR: Extraction failed!')
+        print("pre-extractions frame count: ", preCount)
+        print("post-extractions frame count: ", postCount)
+        print("first byte = ",extracted_data[0])
+        print("last byte = ",extracted_data[-1])
