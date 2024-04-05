@@ -3,13 +3,26 @@ import os
 import json
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 from constants.hid_constants import HID_Data
+from config import get_vendor_product_ids, update_vendor_product_ids
 
 # Vendor and Product IDs of your Fantech RGB gaming keyboard
-VENDOR_ID = 0x0C45  # Replace with your keyboard's vendor ID
-PRODUCT_ID = 0x8006  # Replace with your keyboard's product ID
 
-# Find the device
-device = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
+isDeviceInfoFound = False
+device = None
+
+# config the device
+while(not isDeviceInfoFound):
+    result = get_vendor_product_ids()
+    if result is not None:
+        vendor_id_str, product_id_str = result
+        # Convert hexadecimal strings to integers
+        vendor_id = int(vendor_id_str, 16)
+        product_id = int(product_id_str, 16)
+        device = usb.core.find(idVendor=vendor_id, idProduct=product_id)
+        isDeviceInfoFound = True
+    else:
+        print("WARNING: Device Info not found. Applying auto-configs for OPTILUXS_MK884")
+        update_vendor_product_ids('0x0C45','0x8006')
 
 # Check if the device is found
 if device is None:
