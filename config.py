@@ -5,6 +5,7 @@ import logging
 # Configure logging to write messages at the INFO level or higher to both the console and a file
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
+HEX_RAW_DATA_PATH = r"hex\raw-data"
 
 def update_vendor_product_ids(vendor_id, product_id):
 

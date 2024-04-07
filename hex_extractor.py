@@ -10,6 +10,7 @@ raw_data_file_path = r"hex\raw-data\default.json"
 frame_threashold = 24
 
 def extract_data_from_packets(packets):
+    logging.info("Initiating Data extraction")
     global frame_threashold
     # Extracting 'data_fragment' from each dictionary and creating a list
     extracted_data = []
@@ -45,7 +46,7 @@ def extract_data_from_packets(packets):
 def update_or_create_output_json(input_json_file_path, extracted_data):
     # Extract the filename from the provided input file path
     filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
-    logging.info("Extracting %s",filename)
+    logging.info("Saving [%s] Data",filename)
     # Define the output JSON file path
     output_json_file_path = "data.json"
 
@@ -72,7 +73,7 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
     with open(output_json_file_path, 'w') as file:
         json.dump(data, file)
 
-    logging.info("Data extracted and saved successfully")
+    logging.info("Data saved successfully")
 
 def remove_node_from_json(input_json_file_path):
     # Extract the filename from the provided input file path
@@ -107,13 +108,14 @@ def do_extract(input_file_path):
     with open(input_file_path, 'r') as file:
         extracted_data = json.load(file)
 
+
     extracted_data = extract_data_from_packets(extracted_data)
 
     pre_count = len(extracted_data)
     post_count = len(extracted_data)
 
     if(post_count == frame_threashold):
-        logging.info('Extraction successful')
+        logging.info('Data extracted successfully')
         logging.debug("pre-extractions frame count: %d", pre_count)
         logging.debug("post-extractions frame count: %d", post_count)
         update_or_create_output_json(input_file_path, extracted_data)
