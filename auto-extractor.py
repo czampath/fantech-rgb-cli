@@ -9,6 +9,7 @@ import logging
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from hex_extractor import do_extract
+from config import HEX_RAW_DATA_PATH
 
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
@@ -34,7 +35,7 @@ class MyHandler(FileSystemEventHandler):
 
 if __name__ == "__main__":
     # Directory to watch
-    path = r"hex\raw-data"
+    path = HEX_RAW_DATA_PATH
 
     try:
         # Create the directory if it doesn't exist
@@ -50,7 +51,7 @@ if __name__ == "__main__":
 
     # Start the observer
     observer.start()
-    logging.info("Auto-extractor Started - Awaiting new data files at hex/raw-data")
+    logging.info("Auto-extractor Started - Awaiting new data files at hex\raw-data")
 
     try:
         while True:

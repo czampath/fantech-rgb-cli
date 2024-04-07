@@ -2,11 +2,11 @@ import os
 import json
 import logging
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
+from config import DATA_STORE
 
 # Configure logging to write messages at the INFO level or higher to both the console and a file
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
-raw_data_file_path = r"hex\raw-data\default.json"
 frame_threashold = 24
 
 def extract_data_from_packets(packets):
@@ -44,11 +44,12 @@ def extract_data_from_packets(packets):
     return extracted_data
 
 def update_or_create_output_json(input_json_file_path, extracted_data):
+    global DATA_STORE
     # Extract the filename from the provided input file path
     filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
     logging.info("Saving [%s] Data",filename)
     # Define the output JSON file path
-    output_json_file_path = "data.json"
+    output_json_file_path = DATA_STORE
 
     # Create the data structure if it doesn't exist
     if not os.path.exists(output_json_file_path):
@@ -76,12 +77,13 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
     logging.info("Data saved successfully")
 
 def remove_node_from_json(input_json_file_path):
+    global DATA_STORE
     # Extract the filename from the provided input file path
     filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
     logging.info("Removing node for %s", filename)
     
     # Define the output JSON file path
-    output_json_file_path = "data.json"
+    output_json_file_path = DATA_STORE
 
     # Check if the output JSON file exists
     if os.path.exists(output_json_file_path):

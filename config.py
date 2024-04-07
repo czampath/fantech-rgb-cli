@@ -6,13 +6,14 @@ import logging
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
 
 HEX_RAW_DATA_PATH = r"hex\raw-data"
+DATA_STORE = "data.json"
 
 def update_vendor_product_ids(vendor_id, product_id):
-
+    global DATA_STORE
     # Define the output JSON file path
-    output_json_file_path = "data.json"
+    output_json_file_path = DATA_STORE
 
-    # Check if data.json exists
+    # Check if DATA_STORE exists
     if not os.path.exists(output_json_file_path):
         # Create the data structure with vendor and product IDs
         data = {
@@ -42,7 +43,8 @@ def update_vendor_product_ids(vendor_id, product_id):
     logging.info("Device info saved successfully")
 
 def get_vendor_product_ids():
-    config_file_path = "data.json"
+    global DATA_STORE
+    config_file_path = DATA_STORE
     if not os.path.exists(config_file_path):
         logging.error("Config file does not exist. Please update the vendor and product IDs if auto-configuration fails")
         return None
