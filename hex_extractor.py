@@ -3,6 +3,7 @@ import json
 import logging
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 from config import DATA_STORE
+from utils.data_manager import store_fx
 
 # Configure logging to write messages at the INFO level or higher to both the console and a file
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
@@ -42,66 +43,6 @@ def extract_data_from_packets(packets):
     
     return extracted_data
 
-def update_or_create_output_json(fx_name, extracted_data):
-    global DATA_STORE
-    # Extract the filename from the provided input file path
-    # filename = os.path.splitext(os.path.basename(input_json_file_name))[0]
-    logging.info("Storing [%s] Data",fx_name)
-    # Define the output JSON file path
-    output_json_file_path = DATA_STORE
-
-    # Create the data structure if it doesn't exist
-    if not os.path.exists(output_json_file_path):
-        data = {
-            "OPTILUXS_MK884": {
-                "hex": {
-                    "rgb": {
-                        "fx": {}
-                    }
-                }
-            }
-        }
-    else:
-        # Load existing data from the output JSON file
-        with open(output_json_file_path, 'r') as file:
-            data = json.load(file)
-
-    # Update or add the extracted data for the filename
-    data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][fx_name] = extracted_data
-
-    # Save the updated data to the output JSON file
-    with open(output_json_file_path, 'w') as file:
-        json.dump(data, file)
-
-    logging.info("Data stored successfully")
-
-def remove_node_from_json(input_json_file_path):
-    global DATA_STORE
-    # Extract the filename from the provided input file path
-    filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
-    logging.info("Removing node for %s", filename)
-    
-    # Define the output JSON file path
-    output_json_file_path = DATA_STORE
-
-    # Check if the output JSON file exists
-    if os.path.exists(output_json_file_path):
-        # Load existing data from the output JSON file
-        with open(output_json_file_path, 'r') as file:
-            data = json.load(file)
-
-        # Remove the node corresponding to the filename
-        if "OPTILUXS_MK884" in data and "hex" in data["OPTILUXS_MK884"] and "rgb" in data["OPTILUXS_MK884"]["hex"] and "fx" in data["OPTILUXS_MK884"]["hex"]["rgb"] and filename in data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"]:
-            del data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][filename]
-            logging.info(f"Node for '{filename}' removed successfully.")
-
-            # Save the updated data to the output JSON file
-            with open(output_json_file_path, 'w') as file:
-                json.dump(data, file)
-        else:
-            logging.error(f"Node for '{filename}' not found.")
-    else:
-        logging.error("Output JSON file not found.")
 
 def do_extract(input_file_path):
     global frame_threashold
@@ -121,7 +62,7 @@ def do_extract(input_file_path):
         logging.info('Data extracted successfully')
         logging.debug("pre-extractions frame count: %d", pre_count)
         logging.debug("post-extractions frame count: %d", post_count)
-        update_or_create_output_json(filename, extracted_data)
+        store_fx(filename, extracted_data)
     else:
         logging.error('Extraction failed!')
         logging.debug("pre-extractions frame count: %d", pre_count)

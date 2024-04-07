@@ -5,8 +5,8 @@ import logging
 import datetime
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 from constants.hid_constants import HID_Data
-from config import get_vendor_product_ids, update_vendor_product_ids, DATA_STORE, HEX_RAW_DATA_PATH
-from hex_extractor import do_extract, update_or_create_output_json
+from config import get_vendor_product_ids, update_vendor_product_ids
+from utils.data_manager import store_fx, get_all_effects_data, get_effect_by_name
 from hex.default import DEFAULT
 
 # Configure logging to write messages at the INFO level or higher to both the console and a file
@@ -57,57 +57,15 @@ if device is None:
 # Set configuration
 device.set_configuration()
 
-def list_effects_from_json():
-    global DATA_STORE
-    json_file_path = DATA_STORE
-    try:
-        # Load data from the JSON file
-        with open(json_file_path, 'r') as file:
-            data = json.load(file)
-        
-        # Extract filenames from the JSON data
-        effects = data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"].keys()
-        
-        # Print the list of filenames
-        logging.debug("Available FX:")
-        for effect in effects:
-            logging.debug(effect)
-        
-        return effects
-
-    except FileNotFoundError:
-        logging.error("JSON file not found at the specified path.")
-
-def get_hex_from_json(filename):
-    global DATA_STORE
-    # Define the output JSON file path
-    output_json_file_path = DATA_STORE
-
-    # Check if the JSON file exists
-    if not os.path.exists(output_json_file_path):
-        logging.error("JSON file does not exist.")
-        return None
-
-    # Load existing data from the output JSON file
-    with open(output_json_file_path, 'r') as file:
-        data = json.load(file)
-
-    # Check if the node exists for the given filename
-    if filename in data.get("OPTILUXS_MK884", {}).get("hex", {}).get("rgb", {}).get("fx", {}):
-        return data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][filename]
-    else:
-        logging.error("FX not recognized")
-        return None
-
 # Check if Effects are available
-effects = list_effects_from_json()
+effects = get_all_effects_data()
 if not effects:
     logging.warning("No FX found, falling back to [default] FX")
     effect_name = "default"
-    update_or_create_output_json(effect_name, DEFAULT)
+    store_fx(effect_name, DEFAULT)
 
 # Draw FX form the DATA_STORE
-hex_array = get_hex_from_json(effect_name)
+hex_array = get_effect_by_name(effect_name)
 if hex_array is not None:
     data_len = len(hex_array)
     logging.info("Retrieved [%s] with %d byte frames", effect_name, data_len)
