@@ -6,7 +6,8 @@ import datetime
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 from constants.hid_constants import HID_Data
 from config import get_vendor_product_ids, update_vendor_product_ids, DATA_STORE, HEX_RAW_DATA_PATH
-from hex_extractor import do_extract
+from hex_extractor import do_extract, update_or_create_output_json
+from hex.default import DEFAULT
 
 # Configure logging to write messages at the INFO level or higher to both the console and a file
 logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(levelname)s - %(message)s')
@@ -68,7 +69,7 @@ def list_effects_from_json():
         effects = data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"].keys()
         
         # Print the list of filenames
-        logging.info("Available FX:")
+        logging.debug("Available FX:")
         for effect in effects:
             logging.debug(effect)
         
@@ -102,15 +103,14 @@ def get_hex_from_json(filename):
 effects = list_effects_from_json()
 if not effects:
     logging.warning("No FX found, falling back to [default] FX")
-    alternate_data_path = HEX_RAW_DATA_PATH + r"\default.json"
     effect_name = "default"
-    do_extract(alternate_data_path)
+    update_or_create_output_json(effect_name, DEFAULT)
 
 # Draw FX form the DATA_STORE
 hex_array = get_hex_from_json(effect_name)
 if hex_array is not None:
     data_len = len(hex_array)
-    logging.info("Retrieved [%s] with %d frames", effect_name, data_len)
+    logging.info("Retrieved [%s] with %d byte frames", effect_name, data_len)
 else:
     logging.error("FATAL: Failed to retrieve effect %s", effect_name)
     exit()

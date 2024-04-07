@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # Start the observer
     observer.start()
-    logging.info("Auto-extractor Started - Awaiting new data files at hex\raw-data")
+    logging.info(r"Auto-extractor Started - Awaiting new data files at hex\raw-data")
 
     try:
         while True:

@@ -10,7 +10,6 @@ logging.basicConfig(level=logging.INFO, filename='fantech.log', format='%(leveln
 frame_threashold = 24
 
 def extract_data_from_packets(packets):
-    logging.info("Initiating Data extraction")
     global frame_threashold
     # Extracting 'data_fragment' from each dictionary and creating a list
     extracted_data = []
@@ -43,11 +42,11 @@ def extract_data_from_packets(packets):
     
     return extracted_data
 
-def update_or_create_output_json(input_json_file_path, extracted_data):
+def update_or_create_output_json(fx_name, extracted_data):
     global DATA_STORE
     # Extract the filename from the provided input file path
-    filename = os.path.splitext(os.path.basename(input_json_file_path))[0]
-    logging.info("Saving [%s] Data",filename)
+    # filename = os.path.splitext(os.path.basename(input_json_file_name))[0]
+    logging.info("Storing [%s] Data",fx_name)
     # Define the output JSON file path
     output_json_file_path = DATA_STORE
 
@@ -68,13 +67,13 @@ def update_or_create_output_json(input_json_file_path, extracted_data):
             data = json.load(file)
 
     # Update or add the extracted data for the filename
-    data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][filename] = extracted_data
+    data["OPTILUXS_MK884"]["hex"]["rgb"]["fx"][fx_name] = extracted_data
 
     # Save the updated data to the output JSON file
     with open(output_json_file_path, 'w') as file:
         json.dump(data, file)
 
-    logging.info("Data saved successfully")
+    logging.info("Data stored successfully")
 
 def remove_node_from_json(input_json_file_path):
     global DATA_STORE
@@ -110,7 +109,9 @@ def do_extract(input_file_path):
     with open(input_file_path, 'r') as file:
         extracted_data = json.load(file)
 
+    filename = os.path.splitext(os.path.basename(input_file_path))[0]
 
+    logging.info("Initiating Data extraction : [%s]", filename)
     extracted_data = extract_data_from_packets(extracted_data)
 
     pre_count = len(extracted_data)
@@ -120,7 +121,7 @@ def do_extract(input_file_path):
         logging.info('Data extracted successfully')
         logging.debug("pre-extractions frame count: %d", pre_count)
         logging.debug("post-extractions frame count: %d", post_count)
-        update_or_create_output_json(input_file_path, extracted_data)
+        update_or_create_output_json(filename, extracted_data)
     else:
         logging.error('Extraction failed!')
         logging.debug("pre-extractions frame count: %d", pre_count)
