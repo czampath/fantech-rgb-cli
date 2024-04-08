@@ -23,15 +23,19 @@ logging.getLogger().addHandler(console_handler)
 
 # Event handler for filesystem events
 class MyHandler(FileSystemEventHandler):
+    processed_files = set()
     def on_created(self, event):
         if event.is_directory:
             return
         # file_extension = os.path.splitext(event.src_path)[1]
         filename, file_extension = os.path.splitext(os.path.basename(event.src_path))
         if file_extension.lower() == '.json':
-            logging.info("New Data file detected: [%s]",filename)
-            do_extract(event.src_path)
-            logging.info("Awaiting next file...")
+             if filename not in self.processed_files:  # Check if file has already been processed
+                self.processed_files.add(filename)  # Add filename to processed set
+                logging.info("New Data file detected: [%s]",filename)
+                time.sleep(1)
+                do_extract(event.src_path)
+                logging.info("Awaiting next file...")
 
 if __name__ == "__main__":
     # Directory to watch
