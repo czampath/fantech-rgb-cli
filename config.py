@@ -18,8 +18,8 @@ def update_vendor_product_ids(vendor_id, product_id):
         # Create the data structure with vendor and product IDs
         data = {
             "OPTILUXS_MK884": {
-                "VENDOR_ID": "your_vendor_id_here",
-                "PRODUCT_ID": "your_product_id_here",
+                "VENDOR_ID": "vendor_id",
+                "PRODUCT_ID": "product_id",
                 "hex": {
                     "rgb": {
                         "fx": {}
