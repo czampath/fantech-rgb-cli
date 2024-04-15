@@ -29,6 +29,17 @@ def get_effect_by_name(filename):
 def get_all_effects_data():
     global DATA_STORE
     json_file_path = DATA_STORE
+
+    if not os.path.exists(json_file_path):
+        # If data.json file is not found, create it and copy data from data.py
+        try:
+            from data import data
+            with open(json_file_path, 'w') as file:
+                json.dump(data, file)
+        except ImportError:
+            logging.error("data.py not found. Unable to create data.json.")
+            return []
+
     try:
         # Load data from the JSON file
         with open(json_file_path, 'r') as file:
@@ -46,6 +57,7 @@ def get_all_effects_data():
 
     except FileNotFoundError:
         logging.error("JSON file not found at the specified path.")
+        return []
 
 def store_fx(fx_name, extracted_data):
     global DATA_STORE
