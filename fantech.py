@@ -2,6 +2,7 @@ import usb.core
 import logging
 import datetime
 import argparse
+from sys import exit
 from constants.hex_constants import ControlDataPoint, SpecialDataPoint
 from constants.hid_constants import HID_Data
 from config import get_vendor_product_ids, update_vendor_product_ids
@@ -30,7 +31,8 @@ device = None
 def run_style(args):
     global is_device_info_found, config_attempt_limit, config_attempts, device
     # desired RGB effect
-    effect_name = f"{args.set_style}-{args.color}" if args.set_style is not None and args.color else f"{args.set_style}-default" if args.set_style is not None else args.set_style
+    # effect_name = f"{args.set_style}-{args.color}" if args.set_style is not None and args.color else f"{args.set_style}-default" if args.set_style is not None else args.set_style
+    effect_name = f"{args.set_style}-{args.color}" if args.set_style is not None and args.color and args.set_style != "off" else f"{args.set_style}-default" if args.set_style is not None and args.set_style != "off" else args.set_style
     # config the device
     while(not is_device_info_found):
         result = get_vendor_product_ids()
@@ -44,7 +46,7 @@ def run_style(args):
         else:
             config_attempts += 1
             if config_attempts >= config_attempt_limit:
-                logging.error("FATAL: Maximun auto-configuration attempts reached")
+                logging.error("FATAL: Maximum auto-configuration attempts reached")
                 exit()
             logging.warning("Applying auto-configs for OPTILUXS_MK884")
             update_vendor_product_ids('0x0C45','0x8006')
