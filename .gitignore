@@ -1,3 +1,5 @@
 Lib/site-packages/
 Scripts/
 fantech.log
+__pycache__/
+build/

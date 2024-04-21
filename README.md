@@ -27,3 +27,10 @@ Fantech RGB Keyboard CLI Control is specifically designed for use with **FANTECH
 ## Command-line Arguments
 - To be updated
 
+## Compile Code
+
+   This command will create a single executable file named "fantech.exe" in the "dist" directory within your project folder. The "--onefile" option bundles everything into a single file, "--noconsole" hides the console window, and "--add-data" includes the "data.json" file alongside the executable.
+
+```
+pyinstaller --onefile --noconsole --add-data "data.json;." fantech.py
+```
