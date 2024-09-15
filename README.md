@@ -25,7 +25,57 @@ Fantech RGB Keyboard CLI Control is specifically designed for use with **FANTECH
 6. Customize the command-line arguments as needed for different lighting effects.
 
 ## Command-line Arguments
-- To be updated
+
+- `--set-style [style]` (Required):
+  - Specify the desired RGB effect style.
+  - The style must be one of the supported effects.
+  - Example: `--set-style shuttle`
+  
+- `--color [color]` (Optional):
+  - Specify the color for the chosen effect.
+  - If no color is provided, the default color for the effect will be used.
+  - Example: `--set-style shuttle --color red`
+
+- `--get-style [style]`:
+  - Use `*` to list all unique styles without colors.
+  - Example: `python fantech.py --get-style *` will return:
+    ```
+    default
+    off
+    rotating
+    spectrum
+    shuttle
+    ```
+  - Pass a specific style to list all available colors for that style.
+  - Example: `python fantech.py --get-style shuttle` will return:
+    ```
+    default
+    red
+    ```
+
+- `--help`:
+  - Displays the help message with descriptions of all available command-line arguments.
+  - Example: `python fantech.py --help`
+
+### Example Commands:
+
+- Set an RGB effect with default color:
+  ```bash
+  python fantech.py --set-style shuttle
+  ```
+- Set an RGB effect with a specific color:
+  ```bash
+  python fantech.py --set-style static --color red
+  ```
+- List all styles:
+  ```bash
+  python fantech.py --get-style *
+  ```
+- List all colors for a specific style:
+  ```bash
+  python fantech.py --get-style shuttle
+  ```
+In case the device cannot be found, the tool will attempt auto-configuration based on the default `vendor_id` and `product_id`.
 
 ## Compile Code
 

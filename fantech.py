@@ -102,13 +102,45 @@ def validate_style(value):
     return value
 
 def main(args):
+    # Get all effects
+    all_effects = get_all_effects_data()
+
+    # If --get-style * is passed, list all unique styles
+    if args.get_style == "*":
+        print("\nAvailable styles:\n")
+        # Extract unique styles by keeping only the part before '-'
+        unique_styles = {effect.split('-')[0] for effect in all_effects}
+        for style in sorted(unique_styles):
+            print(style)
+        exit()
+
+    # If --get-style <style> is passed, list all available colors for that style
+    elif args.get_style:
+        # Filter effects that start with the requested style
+        matching_effects = [effect for effect in all_effects if effect.startswith(args.get_style + "-")]
+        if not matching_effects:
+            print(f"\nNo colors available for the style '{args.get_style}'")
+        else:
+            print(f"\nColors available for the style '{args.get_style}'\n")
+            # Extract and print all colors for the given style
+            colors = {effect.split('-')[1] for effect in matching_effects}
+            for color in sorted(colors):
+                print(color)
+        exit()
+
     run_style(args)
 
 if __name__ == "__main__":
+
     effects = [effect.replace('-default', '') for effect in get_all_effects_data()]
     parser = argparse.ArgumentParser(description='Description of your program')
+
+    # Existing arguments
     parser.add_argument('--set-style', type=validate_style, help='Style option')
     parser.add_argument('--color', nargs='?', help='Color option (optional)')
+
+    # Updated argument for listing styles or colors
+    parser.add_argument('--get-style', type=str, help="List all unique styles with '*' or available colors for a specific style")
 
     args = parser.parse_args()
     main(args)
