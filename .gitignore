@@ -3,3 +3,5 @@ Scripts/
 fantech.log
 __pycache__/
 build/
+*.pyd
+dist/

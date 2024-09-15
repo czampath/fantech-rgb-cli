@@ -16,8 +16,8 @@ Fantech RGB Keyboard CLI Control is specifically designed for use with **FANTECH
 - Windows operating system
 - Knowledge of basic command-line interface (CLI) usage
 
-## Usage
-1. Download the packaged executable from the release section of the GitHub repository.
+## Installation
+1. Download the zip files from the release section of the GitHub repository.
 2. Connect the Fantech RGB gaming keyboard to your computer via USB.
 3. Open the command prompt (CMD) in the directory where the executable is located.
 4. Run the executable with appropriate command-line arguments to send setup packets to the keyboard.
@@ -81,6 +81,12 @@ In case the device cannot be found, the tool will attempt auto-configuration bas
 
    This command will create a single executable file named "fantech.exe" in the "dist" directory within your project folder. The "--onefile" option bundles everything into a single file, "--noconsole" hides the console window, and "--add-data" includes the "data.json" file alongside the executable.
 
+#### One-file : Runtime execution is slower
 ```
 pyinstaller --onefile --noconsole --add-data "data.json;." fantech.py
+```
+
+#### With Directory bundle : Runtime execution is faster
+```
+pyinstaller --noconsole --add-data "data.json;." fantech.py
 ```

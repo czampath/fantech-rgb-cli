@@ -20,7 +20,7 @@ console_handler.setFormatter(logging.Formatter('%(levelname)s - %(message)s'))
 # Add the console handler to the root logger
 logging.getLogger().addHandler(console_handler)
 
-logging.info("Execution started at %s", datetime.datetime.now())
+logging.debug("Execution started at %s", datetime.datetime.now())
 
 # auto-config flags
 is_device_info_found = False 
@@ -83,7 +83,7 @@ def run_style(args):
             logging.debug("Regular byte: %s",data)
             
             # Send GET_REPORT after each data point
-            if data in [SpecialDataPoint.static, ControlDataPoint.INIT_COMM, ControlDataPoint.END_TRANSFER, ControlDataPoint.BEGIN_DATA_TRANSFER]:
+            if data in [SpecialDataPoint.static, SpecialDataPoint.unidentified_1, ControlDataPoint.INIT_COMM, ControlDataPoint.END_DATA_TRANSFER, ControlDataPoint.BEGIN_DATA_TRANSFER]:
                 logging.debug("Special byte; Sending GET_REPORT")
                 device.ctrl_transfer(HID_Data.BmRequestType.TO_HOST, HID_Data.BRequest.GET_REPORT, HID_Data.wValue, HID_Data.wIndex, HID_Data.wLength)
 
@@ -93,7 +93,7 @@ def run_style(args):
 
     logging.info("Request sent successfully.")
 
-    logging.info("Execution ended at %s", datetime.datetime.now())
+    logging.debug("Execution ended at %s", datetime.datetime.now())
 
 
 def validate_style(value):
