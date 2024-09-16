@@ -1,4 +1,4 @@
-# Fantech RGB Keyboard CLI Control
+# Fantech RGB Keyboard CLI Control <img src="https://visitor-badge.laobi.icu/badge?page_id=czampath.fantech-rgb-cli" />
 
 ## Overview
 Fantech RGB CLI, built upon reverse engineering techniques, simplifies RGB lighting management for Fantech RGB gaming peripherals (keyboard/mouse). Easily control, automate and switch between a variety of lighting effects using command-line interface. It was initially developed for personal use and later made available to the public.
